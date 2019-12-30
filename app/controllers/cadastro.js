@@ -20,8 +20,8 @@ module.exports.cadastrar = function(application, req, res){
     var connection = application.config.connection.mongodb;
 
     var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
+    var JogoDAO = new application.app.models.JogoDAO(connection);
 
     UsuariosDAO.inserirUsuario(dadosForm);
-
-    res.send('podemos cadastrar');
+    JogoDAO.gerarParametros(dadosForm.usuario);
 }
