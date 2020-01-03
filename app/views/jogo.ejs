@@ -14,10 +14,37 @@
 		<!-- incluindo css -->
 		<link href="css/style.css" rel="stylesheet">
 
+		<!-- incluindo sweetalert2 -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 		<script>
 			$(document).ready(function(){
 				$('#btn_sair').click(function(){
 					window.location.href = '/sair';
+				})
+			})
+
+			$(document).ready(function(){
+				$('#btn_suditos').click(function(){
+					$.ajax({ 
+						url: 'suditos',
+						method: 'get',
+						success: function(data){
+							$('#acoes').html(data);
+						}
+					 });
+				})
+			})
+
+			$(document).ready(function(){
+				$('#btn_pergaminhos').click(function(){
+					$.ajax({ 
+						url: 'pergaminhos',
+						method: 'get',
+						success: function(data){
+							$('#acoes').html(data);
+						}
+					 });
 				})
 			})
 		</script>
@@ -35,7 +62,8 @@
 		</nav>
 
 	    <div class="container">
-	    	
+
+			<input type="hidden" value="<%= msg %>" id="msg">
 			<div class="row">
 	    		<div class="col-sm-3 casa">
 					<img src="images/casa_<%=img_casa%>.jpg" />
@@ -69,7 +97,7 @@
 			<div class="row">
 				<div class="col-sm-3"></div>
 				<div class="col-sm-9">
-					<div class="acoes"></div>					
+					<div class="acoes" id="acoes">Senhor, o que deseja fazer hoje?</div>					
 				</div>
 			</div>
 			
@@ -80,23 +108,46 @@
 			
 				<div class="row">
 					<div class="col-sm-1">
-						<img src="images/outros/suditos.jpg" title="Aldeões" alt="Aldeões"/>
+						<img class="suditos" src="images/outros/suditos.jpg" title="Aldeões" alt="Aldeões" id="btn_suditos"/>
 						<span><%= jogo.suditos %></span>
 					</div>
 					
 					<div class="col-sm-1">
-						<img src="images/outros/pergaminho.jpg" title="Pergaminhos" alt="Pergaminhos"/>
+						<img class="pergaminhos" src="images/outros/pergaminho.jpg" title="Pergaminhos" alt="Pergaminhos" id="btn_pergaminhos"/>
 					</div>
 					
 					<div class="col-sm-8"></div>
 					
 					<div class="col-sm-2">
-						<img src="images/outros/moeda.jpg" title="Moeda" alt="Moeda"/>
+						<img class="moeda" src="images/outros/moeda.jpg" title="Moeda" alt="Moeda"/>
 						<span><%= jogo.moeda %></span>
 					</div>
 					
 				</div>
 			</div>
 		</div>
+		<script>
+			var msg = JSON.parse($('#msg').val());
+
+			switch(msg.type){
+				case 'sudits_form_error':
+					html = '<ul>';
+						for(var i = 0; i < msg.erros.length; i++){
+							html += '<li align="left">' + msg.erros[i].msg + '</li>';
+						}
+					html += '</ul>';
+					Swal.fire('Operação inválida', html, 'error')
+					.then(() =>{
+						window.location.href = "/jogo";
+					});
+					break;
+				case 'sudits_form_success':
+					Swal.fire('Feito!', 'Ação realizada com sucesso', 'success')
+					.then(() =>{
+						window.location.href = "/jogo";
+					});
+					break;
+			}
+		</script>
 	</body>
 </html>

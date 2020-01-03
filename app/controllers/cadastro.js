@@ -1,5 +1,5 @@
 module.exports.cadastro = function(application, req, res){
-    res.render('cadastro', { validacao: {}, dadosForm: {} });
+    res.render('cadastro', { validacao: {}, dadosForm: {}, msg: '' });
 }
 
 module.exports.cadastrar = function(application, req, res){
@@ -13,7 +13,7 @@ module.exports.cadastrar = function(application, req, res){
     var erros = req.validationErrors();
 
     if(erros){
-        res.render('cadastro', { validacao: erros , dadosForm: dadosForm});
+        res.render('cadastro', { validacao: erros , dadosForm: dadosForm, msg: 'error' });
         return;
     }
 
@@ -24,4 +24,6 @@ module.exports.cadastrar = function(application, req, res){
 
     UsuariosDAO.inserirUsuario(dadosForm);
     JogoDAO.gerarParametros(dadosForm.usuario);
+
+    res.render('cadastro', { validacao: {}, dadosForm: dadosForm, msg: 'success' });
 }

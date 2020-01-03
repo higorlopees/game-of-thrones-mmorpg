@@ -3,35 +3,36 @@ function UsuariosDAO(connection){
 }
 
 UsuariosDAO.prototype.inserirUsuario = function(usuario){
-    this._connection.open(function(err, mongoclient){
-        mongoclient.collection('usuarios', function(err, collection){
-            collection.insert(usuario);
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
 
-            mongoclient.close();
+        db.collection('usuarios', function(err, collection){
+            collection.insertOne(usuario, function(err, result){
+                client.close();
+            });
         })
     });
 }
 
 UsuariosDAO.prototype.autenticar = function(dadosForm, req, res){
-    this._connection.open(function(err, mongoclient){
-        mongoclient.collection('usuarios', function(err, collection){
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
+
+        db.collection('usuarios', function(err, collection){
             collection.find(dadosForm).toArray(function(err, result){
                 if(result[0] != undefined){
                     req.session.autorizado = true;
                     req.session.usuario = result[0].usuario;
                     req.session.casa = result[0].casa;
-                }
-
-                if(req.session.autorizado){
                     res.redirect('jogo');
-                }
-                else{
+                }else{
                     res.render('index',{ validacao: {}, dadosForm: {} })
                 }
             });
-
-            mongoclient.close();
-        })
+            client.close();
+        });
     });
 }
 
