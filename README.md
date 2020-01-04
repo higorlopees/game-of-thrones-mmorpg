@@ -2,7 +2,7 @@
 Game of Thrones MMORPG game repository used in a NodeJS course
 
 ## Configuring the environment
-First instal [nodejs](https://nodejs.org/).
+First instal [nodejs](https://nodejs.org/). Then install [MongoDB](https://www.mongodb.com/).
 
 After that, use `git clone` to clone the repository to your local machine.
 
