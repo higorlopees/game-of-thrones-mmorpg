@@ -29,7 +29,14 @@ module.exports.pergaminhos = function(application, req, res){
         res.render('index', { validacao: {}, dadosForm: {} })
         return;
     }
-    res.render('pergaminhos')
+
+    var connection = application.config.connection.mongodb;
+    var JogoDAO = new application.app.models.JogoDAO(connection);
+    
+    JogoDAO.getAcoes(req.session.usuario, function(result){
+        res.render('pergaminhos', { acoes: result });
+    })
+
 }
 
 module.exports.ordenar_acao_sudito = function(application, req, res){
@@ -54,10 +61,33 @@ module.exports.ordenar_acao_sudito = function(application, req, res){
     else{
         dadosForm.usuario = req.session.usuario;
 
-        JogoDAO.acao(dadosForm, function(){ 
-            connection = application.config.connection.mongodb;
-            var JogoDAO = new application.app.models.JogoDAO(connection);
-            JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'sudits_form_success' });
-        });
+        JogoDAO.valida_moedas(dadosForm, function(result, dadosForm){
+            if(result[0].moeda + dadosForm.moedas < 0){
+                connection = application.config.connection.mongodb;
+                var JogoDAO = new application.app.models.JogoDAO(connection);
+                JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'sudits_form_error_lack_of_coins' });
+            }
+            else{
+                connection = application.config.connection.mongodb;
+                var JogoDAO = new application.app.models.JogoDAO(connection);
+                JogoDAO.acao(dadosForm, function(){ 
+                    connection = application.config.connection.mongodb;
+                    var JogoDAO = new application.app.models.JogoDAO(connection);
+                    JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'sudits_form_success' });
+                });
+            }
+        })
+
     }
+}
+
+module.exports.ordem_finalizada = function(application, req, res){
+    if(req.session.autorizado !== true){
+        res.render('index', { validacao: {}, dadosForm: {} })
+        return;
+    }
+
+    connection = application.config.connection.mongodb;
+    var JogoDAO = new application.app.models.JogoDAO(connection);
+    JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'order_done' });    
 }

@@ -37,6 +37,40 @@ JogoDAO.prototype.iniciaJogo = function(res, usuario, casa, msg){
     });
 }
 
+JogoDAO.prototype.valida_moedas = function(dadosForm, callback){
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
+
+        db.collection('jogo', function(err, collection){
+            var moedas = null;
+
+            switch(dadosForm.acao){
+                case '1': 
+                    moedas = -2 * dadosForm.quantidade;
+                    break;
+                case '2': 
+                    moedas = -3 * dadosForm.quantidade;
+                    break;
+                case '3': 
+                    moedas = -1 * dadosForm.quantidade;
+                    break;
+                case '4': 
+                    moedas = -1 * dadosForm.quantidade;
+                    break;
+            }
+
+            dadosForm.moedas = moedas;
+
+            collection.find({ usuario: dadosForm.usuario }).toArray(function(err, result){
+                client.close();
+                callback(result, dadosForm);
+            });
+
+        });
+    });
+}
+
 JogoDAO.prototype.acao = function(dadosForm, callback){
     const client = this._connection;
     client.connect(function(err){
@@ -64,10 +98,31 @@ JogoDAO.prototype.acao = function(dadosForm, callback){
             dadosForm.acao_termina_em = date.getTime() + tempo;
 
             collection.insertOne(dadosForm, function(err, result){
-                client.close();
-                callback();
+                db.collection('jogo', function(err, collection){
+                    collection.updateOne({ usuario: dadosForm.usuario }, { $inc: { moeda: dadosForm.moedas } }, function(err, result){
+                        client.close();
+                        callback();
+                    });
+                });
             });
         });
+    });
+}
+
+JogoDAO.prototype.getAcoes = function(usuario, callback){
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
+
+        db.collection('acao', function(err, collection){
+            var date = new Date();
+            var momento_atual = date.getTime();
+
+            collection.find({ usuario: usuario, acao_termina_em: {$gt: momento_atual} }).toArray(function(err, result){
+                callback(result);
+            });
+            client.close();
+        })
     });
 }
 

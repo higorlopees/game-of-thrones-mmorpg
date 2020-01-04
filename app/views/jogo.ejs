@@ -43,10 +43,28 @@
 						method: 'get',
 						success: function(data){
 							$('#acoes').html(data);
+							clearTimeout(timerId);
+							cronometro();
 						}
 					 });
 				})
 			})
+
+			var timerId = null;
+
+			function cronometro(){
+				$('.tempo_restante').each(function(){
+					var segundos = $(this).html();
+					var segundos_atuais = parseInt(segundos) - 1
+					if(segundos_atuais < 0 ){
+						window.location.href = "/ordem_finalizada";
+					}
+					else{
+						$(this).html(segundos_atuais);
+					}
+				});
+				timerId = setTimeout('cronometro()', 1000);
+			}
 		</script>
 
 	</head>
@@ -136,13 +154,25 @@
 							html += '<li align="left">' + msg.erros[i].msg + '</li>';
 						}
 					html += '</ul>';
-					Swal.fire('Operação inválida', html, 'error')
+					Swal.fire('Operação inválida!', html, 'error')
 					.then(() =>{
 						window.location.href = "/jogo";
 					});
 					break;
 				case 'sudits_form_success':
 					Swal.fire('Feito!', 'Ação realizada com sucesso', 'success')
+					.then(() =>{
+						window.location.href = "/jogo";
+					});
+					break;
+				case 'order_done':
+					Swal.fire('Ordem encerrada!', 'Senhor, a atividade ordenada foi finalizada', 'success')
+					.then(() =>{
+						window.location.href = "/jogo";
+					});
+					break;
+				case 'sudits_form_error_lack_of_coins':
+					Swal.fire('Operação inválida!', 'Senhor, não há moedas suficientes', 'error')
 					.then(() =>{
 						window.location.href = "/jogo";
 					});

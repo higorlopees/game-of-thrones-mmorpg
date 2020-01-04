@@ -15,6 +15,10 @@ module.exports = function(application){
         application.app.controllers.jogo.pergaminhos(application, req, res);
 	});
 
+	application.get('/ordem_finalizada', function(req, res){
+        application.app.controllers.jogo.ordem_finalizada(application, req, res);
+	});
+
 	application.post('/ordenar_acao_sudito', function(req, res){
         application.app.controllers.jogo.ordenar_acao_sudito(application, req, res);
 	});
