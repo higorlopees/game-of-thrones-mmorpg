@@ -28,7 +28,7 @@ UsuariosDAO.prototype.autenticar = function(dadosForm, req, res){
                     req.session.casa = result[0].casa;
                     res.redirect('jogo');
                 }else{
-                    res.render('index',{ validacao: {}, dadosForm: {} })
+                    res.render('index',{ validacao: ['invalid_user_password'], dadosForm: {} });
                 }
             });
             client.close();

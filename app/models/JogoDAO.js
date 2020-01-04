@@ -126,6 +126,21 @@ JogoDAO.prototype.getAcoes = function(usuario, callback){
     });
 }
 
+JogoDAO.prototype.revogarAcao = function(_id, callback){
+    var ObjectId = require('mongodb').ObjectId;
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
+
+        db.collection('acao', function(err, collection){
+            collection.deleteOne({ _id: ObjectId(_id) }, function(err, result){
+                client.close();
+                callback();
+            });
+        });
+    });
+}
+
 module.exports = function(){
     return JogoDAO;
 }

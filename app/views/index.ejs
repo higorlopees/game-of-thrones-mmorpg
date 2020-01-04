@@ -14,6 +14,9 @@
 		<!-- incluindo css -->
 		<link href="css/style.css" rel="stylesheet">
 
+		<!-- incluindo sweetalert2 -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 		<script>
 			$(document).ready(function(){
 				$('#btn_cadastro').click(function(){
@@ -29,16 +32,22 @@
 		<nav class="navbar navbar-default navbar-static-top">
 			<div class="container">
 
-				<% if(validacao.length > 0){ %> 
-					<div class="alert alert-danger">
-						<strong>Atenção!</strong>
-						<ul>
-							<% for(var i = 0; i < validacao.length; i++){ %>
-								<li><%= validacao[i].msg %></li>
-							<% } %>
-						</ul>
-					</div>
-				<% } %>
+				<% if(validacao.length > 0){ %>
+					<% if(validacao[0] === 'invalid_user_password'){ %>
+						<div class="alert alert-danger">
+							<strong>Usuário ou senha inválido(s)</strong>
+						</div>
+					<% } else{ %>
+						<div class="alert alert-danger">
+							<strong>Atenção!</strong>
+							<ul>
+								<% for(var i = 0; i < validacao.length; i++){ %>
+									<li><%= validacao[i].msg %></li>
+								<% } %>
+							</ul>
+						</div>
+					<% }
+				} %>
 
 				<form class="form-inline form-entrar" action="/autenticar" method="post">
 					<div class="form-group">				

@@ -177,6 +177,12 @@
 						window.location.href = "/jogo";
 					});
 					break;
+				case 'action_canceled':
+					Swal.fire('Ordem cancelada!', 'Senhor, a atividade ordenada foi cancelada', 'success')
+					.then(() =>{
+						window.location.href = "/jogo";
+					});
+					break;
 			}
 		</script>
 	</body>

@@ -89,5 +89,17 @@ module.exports.ordem_finalizada = function(application, req, res){
 
     connection = application.config.connection.mongodb;
     var JogoDAO = new application.app.models.JogoDAO(connection);
-    JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'order_done' });    
+    JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'order_done' });
+}
+
+module.exports.revogar_acao = function(application, req, res){
+    var _id = req.query.id_acao;
+
+    connection = application.config.connection.mongodb;
+    var JogoDAO = new application.app.models.JogoDAO(connection);
+    JogoDAO.revogarAcao(_id, function(){
+        connection = application.config.connection.mongodb;
+        var JogoDAO = new application.app.models.JogoDAO(connection);
+        JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'action_canceled' });
+    });
 }
