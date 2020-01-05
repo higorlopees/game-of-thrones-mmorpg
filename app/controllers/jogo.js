@@ -21,7 +21,12 @@ module.exports.suditos = function(application, req, res){
         res.render('index', { validacao: {}, dadosForm: {} })
         return;
     }
-    res.render('aldeoes')
+    var connection = application.config.connection.mongodb;
+    var JogoDAO = new application.app.models.JogoDAO(connection);
+    
+    JogoDAO.getJogo(req.session.usuario, function(result){
+        res.render('aldeoes', { jogo: result });
+    });
 }
 
 module.exports.pergaminhos = function(application, req, res){
@@ -35,8 +40,7 @@ module.exports.pergaminhos = function(application, req, res){
     
     JogoDAO.getAcoes(req.session.usuario, function(result){
         res.render('pergaminhos', { acoes: result });
-    })
-
+    });
 }
 
 module.exports.ordenar_acao_sudito = function(application, req, res){
@@ -61,11 +65,11 @@ module.exports.ordenar_acao_sudito = function(application, req, res){
     else{
         dadosForm.usuario = req.session.usuario;
 
-        JogoDAO.valida_moedas(dadosForm, function(result, dadosForm){
+        JogoDAO.valida_acao(dadosForm, function(result, dadosForm){
             if(result[0].moeda + dadosForm.moedas < 0){
                 connection = application.config.connection.mongodb;
                 var JogoDAO = new application.app.models.JogoDAO(connection);
-                JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'sudits_form_error_lack_of_coins' });
+                JogoDAO.iniciaJogo(res, req.session.usuario, req.session.casa, { type: 'sudits_form_error', erros: [{ msg: "Senhor, não há moedas suficientes" }, { msg: "Senhor, não há suditos suficientes" }] });
             }
             else{
                 connection = application.config.connection.mongodb;

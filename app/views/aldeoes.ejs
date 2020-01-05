@@ -1,4 +1,4 @@
-<div id="aldecoes">					
+<div id="aldeoes">					
 	<h3>Aldeões</h3>
 	
 	<form class="form-cadastro" action="/ordenar_acao_sudito" method="post">
@@ -33,7 +33,7 @@
 		<hr />
 		<div class="row">
 			<div class="col-xs-12">
-				<span>Senhor, você possui 8 aldeões desocupados e 2 aldeões em atividade.</span>
+				<span>Senhor, você possui <%= jogo.suditos %> aldeões desocupados e <%= 10-jogo.suditos %> aldeões em atividade.</span>
 			</div>
 		</div>
 	</form>

@@ -37,7 +37,7 @@ JogoDAO.prototype.iniciaJogo = function(res, usuario, casa, msg){
     });
 }
 
-JogoDAO.prototype.valida_moedas = function(dadosForm, callback){
+JogoDAO.prototype.valida_acao = function(dadosForm, callback){
     const client = this._connection;
     client.connect(function(err){
         const db = client.db('got');
@@ -99,7 +99,7 @@ JogoDAO.prototype.acao = function(dadosForm, callback){
 
             collection.insertOne(dadosForm, function(err, result){
                 db.collection('jogo', function(err, collection){
-                    collection.updateOne({ usuario: dadosForm.usuario }, { $inc: { moeda: dadosForm.moedas } }, function(err, result){
+                    collection.updateOne({ usuario: dadosForm.usuario }, { $inc: { moeda: dadosForm.moedas, suditos: (dadosForm.quantidade*-1) } }, function(err, result){
                         client.close();
                         callback();
                     });
@@ -120,6 +120,21 @@ JogoDAO.prototype.getAcoes = function(usuario, callback){
 
             collection.find({ usuario: usuario, acao_termina_em: {$gt: momento_atual} }).toArray(function(err, result){
                 callback(result);
+            });
+            client.close();
+        })
+    });
+}
+
+JogoDAO.prototype.getJogo = function(usuario, callback){
+    const client = this._connection;
+    client.connect(function(err){
+        const db = client.db('got');
+
+        db.collection('jogo', function(err, collection){
+            collection.find({ usuario: usuario }).toArray(function(err, result){
+                console.log(result);
+                callback(result[0]);
             });
             client.close();
         })
