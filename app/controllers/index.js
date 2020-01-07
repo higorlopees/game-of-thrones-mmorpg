@@ -15,8 +15,16 @@ module.exports.autenticar = function(application, req, res){
         return;
     }
 
-    var connection = application.config.connection.mongodb;
-    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
+    var UsuariosDAO = new application.app.models.UsuariosDAO(application.config.connection.mongodb);
 
-    UsuariosDAO.autenticar(dadosForm, req, res);
+    UsuariosDAO.autenticar(dadosForm, function(err, result){
+        if(result[0] != undefined){
+            req.session.autorizado = true;
+            req.session.usuario = result[0].usuario;
+            req.session.casa = result[0].casa;
+            res.redirect('jogo');
+        }else{
+            res.render('index',{ validacao: ['invalid_user_password'], dadosForm: {} });
+        }
+    });
 }

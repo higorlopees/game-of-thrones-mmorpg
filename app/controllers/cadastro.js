@@ -3,27 +3,26 @@ module.exports.cadastro = function(application, req, res){
 }
 
 module.exports.cadastrar = function(application, req, res){
-    var dadosForm = req.body;
+    let dadosForm = req.body;
 
     req.assert('nome', 'Nome não pode ser vazio').notEmpty();
     req.assert('usuario', 'Usuario não pode ser vazio').notEmpty();
     req.assert('senha', 'Senha não pode ser vazio').notEmpty();
     req.assert('casa', 'Casa não pode ser vazio').notEmpty();
 
-    var erros = req.validationErrors();
+    let erros = req.validationErrors();
 
     if(erros){
         res.render('cadastro', { validacao: erros , dadosForm: dadosForm, msg: 'error' });
         return;
     }
 
-    var connection = application.config.connection.mongodb;
+    const UsuariosDAO = new application.app.models.UsuariosDAO(application.config.connection.mongodb);
+    const JogoDAO = new application.app.models.JogoDAO(application.config.connection.mongodb);
 
-    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
-    var JogoDAO = new application.app.models.JogoDAO(connection);
-
-    UsuariosDAO.inserirUsuario(dadosForm);
-    JogoDAO.gerarParametros(dadosForm.usuario);
-
-    res.render('cadastro', { validacao: {}, dadosForm: dadosForm, msg: 'success' });
+    UsuariosDAO.inserirUsuario(dadosForm, function(err, result){
+        JogoDAO.gerarParametros(dadosForm.usuario, function(err, result){
+            res.render('cadastro', { validacao: {}, dadosForm: dadosForm, msg: 'success' });
+        });
+    });
 }

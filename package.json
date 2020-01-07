@@ -11,6 +11,7 @@
   "author": "Higor Lopes da Silva",
   "license": "ISC",
   "dependencies": {
+    "assert": "^2.0.0",
     "body-parser": "^1.19.0",
     "consign": "^0.1.6",
     "crypto": "^1.0.1",
