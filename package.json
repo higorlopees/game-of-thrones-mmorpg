@@ -23,6 +23,6 @@
     "sweetalert2": "^9.5.4"
   },
   "devDependencies": {
-    "nodemon": "^2.0.1"
+    "nodemon": "^2.0.2"
   }
 }
